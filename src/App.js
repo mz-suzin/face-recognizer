@@ -2,12 +2,18 @@ import './App.css';
 import Navigation from './components/navigation/Navigation.js';
 import Logo from './components/logo/Logo.js';
 import ImageLinkForm from './components/imageLinkForm/ImageLinkForm.js';
-import Rank from './components/rank/Rank.js';
+import React, { Component } from 'react';
+import Rank from  './components/rank/Rank';
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
+import Clarifai from 'clarifai';
 
-const App = () => {
-  const particlesOptions = 
+const app = new Clarifai.App({
+  apiKey: '81fe6e0759124ad8b0fe947794ae4018'
+})
+
+
+const particlesOptions = 
   {
     "fullScreen": {
       "enable": true,
@@ -95,30 +101,56 @@ const App = () => {
       "opacity": 0
     }};
 
-  const particlesInit = async (main) => {
-    console.log(main);
-    await loadFull(main);
-  };
+const particlesInit = async (main) => {
+  console.log(main);
+  await loadFull(main);
+};
 
-  return (
-    <div className="App">
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
+class App extends Component {
+  constructor() { 
+    super();
+    this.state = {
+      input: '',
+    }
+  }
 
-        options={particlesOptions}/>
-    
-    
-    <div>
-      <Navigation />
-      <Logo />
-    </div>
-    <Rank />
-    <ImageLinkForm />
+  onInputChange = (event) => {
+    console.log(event.target.value);
+  }
+
+  onButtonSubmit = (event) => {
+    console.log('click');
+    app.models.predict('81fe6e0759124ad8b0fe947794ae4018', 'https://img.freepik.com/free-photo/worldface-american-woman-white-background_53876-146191.jpg?w=2000').then(
+    function(response)
+    {
+      console.log('123', response);
+    },
+    function(err){
+
+    });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <Particles
+          id="tsparticles"
+          init={particlesInit}
+
+          options={particlesOptions}/>
       
-    {/* <FaceRecognizer /> */}
-    </div>
-  );
+      
+      <div>
+        <Navigation />
+        <Logo />
+      </div>
+      <Rank />
+      <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/> {/*has to be this.blablabla because onInputChange is a property of the class */} 
+        
+      {/* <FaceRecognizer /> */}
+      </div>
+    );
+  }
 }
 
 export default App;
