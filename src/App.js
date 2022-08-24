@@ -2,6 +2,7 @@ import './App.css';
 import Navigation from './components/navigation/Navigation.js';
 import Logo from './components/logo/Logo.js';
 import ImageLinkForm from './components/imageLinkForm/ImageLinkForm.js';
+import FaceRecognizer from './components/faceRecognizer/FaceRecognizer';
 import React, { Component } from 'react';
 import Rank from  './components/rank/Rank';
 import Particles from "react-tsparticles";
@@ -10,7 +11,7 @@ import Clarifai from 'clarifai';
 
 const app = new Clarifai.App({
   apiKey: '81fe6e0759124ad8b0fe947794ae4018'
-})
+});
 
 
 const particlesOptions = 
@@ -111,23 +112,26 @@ class App extends Component {
     super();
     this.state = {
       input: '',
+      imageUrl: ''
     }
   }
 
   onInputChange = (event) => {
-    console.log(event.target.value);
+    this.setState({input: event.target.value})
   }
 
-  onButtonSubmit = (event) => {
-    console.log('click');
-    app.models.predict('81fe6e0759124ad8b0fe947794ae4018', 'https://img.freepik.com/free-photo/worldface-american-woman-white-background_53876-146191.jpg?w=2000').then(
-    function(response)
-    {
-      console.log('123', response);
-    },
-    function(err){
-
-    });
+  onButtonSubmit = () => {
+    this.setState({imageUrl: this.state.input})
+    app.models.predict(
+      Clarifai.FACE_DETECT_MODEL,
+      this.state.input)
+      .then(function(response){
+        console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
+      },
+      function(err){
+        console.log('erro', err);
+      }
+    );
   }
 
   render() {
@@ -136,18 +140,18 @@ class App extends Component {
         <Particles
           id="tsparticles"
           init={particlesInit}
+          options={particlesOptions} />
 
-          options={particlesOptions}/>
-      
-      
-      <div>
-        <Navigation />
-        <Logo />
-      </div>
+        <div>
+          <Navigation />
+          <Logo />
+        </div>
       <Rank />
-      <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/> {/*has to be this.blablabla because onInputChange is a property of the class */} 
+      <ImageLinkForm onInputChange={this.onInputChange}
+       onButtonSubmit={this.onButtonSubmit}/>
+        {/*has to be this.blablabla because onInputChange is a property of the class */} 
         
-      {/* <FaceRecognizer /> */}
+      <FaceRecognizer imageUrl={this.state.imageUrl}/>
       </div>
     );
   }
