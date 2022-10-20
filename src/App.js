@@ -133,7 +133,6 @@ class App extends Component {
     const image = document.getElementById('inputimage');
     const w = Number(image.width);
     const h = Number(image.height);
-    console.log('im here');
     return {
       leftCol: clarifaiFace.left_col * w,
       topRow: clarifaiFace.top_row * h,
@@ -143,30 +142,42 @@ class App extends Component {
   }
 
   displayFaceBox = (box) => {
-    this.setState({box: box})
+    this.setState({box: box});
   }
 
   onInputChange = (event) => {
-    this.setState({input: event.target.value})
+    this.setState({input: event.target.value});
   }
 
   onButtonSubmit = () => {
-    this.setState({imageUrl: this.state.input})
-    console.log('imageSubmit');
+    this.setState({imageUrl: this.state.input});
+    console.log('onButtonSubmit');
     app.models
       .predict(
         Clarifai.FACE_DETECT_MODEL,
         this.state.input)
       .then(response => {
-        console.log(response);
-        return this.displayFaceBox(this.calculateFaceLocation(response))})
+        if (response) {
+          fetch('http://localhost:3000/image', {
+            method: 'put',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({
+              id: this.state.user.id
+            })
+          })
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, {entries: count}))
+          })
+        }
+        this.displayFaceBox(this.calculateFaceLocation(response))})
       .catch(err => console.log(err));
   }
 
   loadUser = (data) => {
     this.setState({user: {
         id: data.id,
-        name:data.name,
+        name: data.name,
         email: data.email,
         entries: data.entries,
         joined: data.joined
