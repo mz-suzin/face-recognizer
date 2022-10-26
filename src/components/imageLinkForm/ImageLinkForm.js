@@ -7,9 +7,9 @@ const ImageLinkForm = ({ onInputChange, onButtonSubmit }) => { //destructuring t
             <p className='f3'>
                 {'Insert a picture below for the Magic Brain to find the face'}
             </p>
-            <p className='f3'>
+            {/* <p className='f3'>
                 {'https://images.pexels.com/photos/1933873/pexels-photo-1933873.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'}
-            </p>
+            </p> */}
             <div className='center'>
                 <div className='center form pa4 br3 shadow-2'>
                     <input 
