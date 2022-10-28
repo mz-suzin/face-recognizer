@@ -147,7 +147,7 @@ class App extends Component {
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input});
 
-    fetch('http://localhost:3000/imageUrl', {
+    fetch('https://fierce-river-95633.herokuapp.com/imageUrl', {
       method:'post',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify({
@@ -157,7 +157,7 @@ class App extends Component {
     .then(res => res.json())
     .then(res => {
       if (res) {
-        fetch('http://localhost:3000/image', {
+        fetch('https://fierce-river-95633.herokuapp.com/image', {
           method: 'put',
           headers: {'content-type': 'application/json'},
           body: JSON.stringify({
